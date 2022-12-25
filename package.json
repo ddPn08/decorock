@@ -1,16 +1,16 @@
 {
   "name": "decorock",
   "description": "Styled component library for solid.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/ddpn08/decorock#readme",
   "author": {
     "name": "ddpn08",
     "url": "https://twitter.com/ddpn08"
   },
   "keywords": [
-    "progressbar",
-    "nprogress",
-    "solid-start",
+    "css",
+    "css-in-js",
+    "styles",
     "solidjs"
   ],
   "license": "MIT",

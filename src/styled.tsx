@@ -1,19 +1,19 @@
 import type { Properties as CSSProperties } from 'csstype'
 import { css } from 'goober'
-import { Component, ComponentProps, createMemo, JSX, splitProps } from 'solid-js'
+import { Component, ComponentProps, createMemo, JSX, splitProps, ValidComponent } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 import { DefaultTheme, useTheme } from './theme'
 
-type PropsType<T extends keyof JSX.IntrinsicElements, P> = ComponentProps<T> & {
+type PropsType<T extends ValidComponent, P> = ComponentProps<T> & {
   class?: string
 } & P
 
-type StyledPlaceholder<T extends keyof JSX.IntrinsicElements, P = {}> = (
+type StyledPlaceholder<T extends ValidComponent, P = {}> = (
   p: PropsType<T, P> & { theme: DefaultTheme },
 ) => any
 
-type MakeStyle<T extends keyof JSX.IntrinsicElements> = <P>(
+type MakeStyle<T extends ValidComponent> = <P>(
   styles:
     | TemplateStringsArray
     | CSSProperties
@@ -21,7 +21,7 @@ type MakeStyle<T extends keyof JSX.IntrinsicElements> = <P>(
   ...args: StyledPlaceholder<T, P>[]
 ) => Component<PropsType<T, P>>
 
-const makeStyled = <T extends keyof JSX.IntrinsicElements>(tag: T): MakeStyle<T> => {
+const makeStyled = <T extends ValidComponent>(tag: T): MakeStyle<T> => {
   return (styles, ...args) =>
     (props) => {
       const [local, others] = splitProps(props, ['class'])

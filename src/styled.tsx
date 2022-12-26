@@ -1,6 +1,6 @@
 import type { Properties as CSSProperties } from 'csstype'
 import { css } from 'goober'
-import { ComponentProps, createMemo, JSX, splitProps } from 'solid-js'
+import { Component, ComponentProps, createMemo, JSX, splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 import { DefaultTheme, useTheme } from './theme'
@@ -13,15 +13,17 @@ type StyledPlaceholder<T extends keyof JSX.IntrinsicElements, P = {}> = (
   p: PropsType<T, P> & { theme: DefaultTheme },
 ) => any
 
-const makeStyled = <T extends keyof JSX.IntrinsicElements>(tag: T) => {
-  return <P,>(
-    styles:
-      | TemplateStringsArray
-      | CSSProperties
-      | ((props: PropsType<T, P> & { theme: DefaultTheme }) => string | CSSProperties),
-    ...args: StyledPlaceholder<T, P>[]
-  ) => {
-    const Comp = (props: PropsType<T, P>) => {
+type MakeStyle<T extends keyof JSX.IntrinsicElements> = <P>(
+  styles:
+    | TemplateStringsArray
+    | CSSProperties
+    | ((props: PropsType<T, P> & { theme: DefaultTheme }) => string | CSSProperties),
+  ...args: StyledPlaceholder<T, P>[]
+) => Component<PropsType<T, P>>
+
+const makeStyled = <T extends keyof JSX.IntrinsicElements>(tag: T): MakeStyle<T> => {
+  return (styles, ...args) =>
+    (props) => {
       const [local, others] = splitProps(props, ['class'])
       const theme = useTheme()
       const className = createMemo(() => {
@@ -46,12 +48,10 @@ const makeStyled = <T extends keyof JSX.IntrinsicElements>(tag: T) => {
         />
       )
     }
-    return Comp
-  }
 }
 
 export type StyledFn = typeof makeStyled & {
-  [element in keyof JSX.IntrinsicElements]: ReturnType<typeof makeStyled>
+  [E in keyof JSX.IntrinsicElements]: MakeStyle<E>
 }
 
 export const styled = new Proxy(makeStyled, {

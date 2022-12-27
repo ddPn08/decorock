@@ -1,4 +1,3 @@
-export * from './styled'
-export * from './styles'
+export * from './css'
 export * from './context'
-export { css, glob, keyframes, setup } from 'goober'
+export { glob, keyframes, setup } from 'goober'

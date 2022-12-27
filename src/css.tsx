@@ -1,4 +1,4 @@
-import { css, type CSSAttribute } from 'goober'
+import { type CSSAttribute, extractCss, css as gooberCss } from 'goober'
 import {
   Component,
   ComponentProps,
@@ -29,6 +29,19 @@ type MakeStyle<T extends ValidComponent> = <P>(
   ...args: StyledPlaceholder<T, P>[]
 ) => Component<PropsType<T, P>>
 
+export const renderStyle = (target?: Element) => `<style id="_goober">${extractCss(target)}</style>`
+export { extractCss }
+
+export const css = (
+  styles: TemplateStringsArray | CSSAttribute | (() => string | CSSAttribute),
+  ...args: any[]
+) => {
+  const { build } = useDecoRock()
+  const s = typeof styles === 'function' ? styles() : styles
+  const p = args.map((f) => (build || ((p) => p))(typeof f === 'function' ? f() : f))
+  return gooberCss(s, ...p)
+}
+
 const makeStyled = <T extends ValidComponent>(
   tag: T,
   opt?: { g: number; d: boolean },
@@ -45,7 +58,7 @@ const makeStyled = <T extends ValidComponent>(
         const p = args.map((f) =>
           (build || ((p) => p))(typeof f === 'function' ? f(withTheme as any) : f),
         )
-        return [local.class, css.apply({ o, g: opt?.g }, [s, ...p])].filter(Boolean).join(' ')
+        return [local.class, gooberCss.apply({ o, g: opt?.g }, [s, ...p])].filter(Boolean).join(' ')
       })
       return (
         <Dynamic

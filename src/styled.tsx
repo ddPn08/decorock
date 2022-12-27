@@ -13,7 +13,7 @@ import { Dynamic } from 'solid-js/web'
 import { DefaultTheme, useDecoRock } from './context'
 
 type PropsType<T extends ValidComponent, P> = ComponentProps<T> & {
-  class?: string
+  class?: string | undefined
   as?: ValidComponent
 } & P
 

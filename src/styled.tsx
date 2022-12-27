@@ -10,7 +10,7 @@ import {
 } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
-import { DefaultTheme, useTheme } from './theme'
+import { DefaultTheme, useDecoRock } from './context'
 
 type PropsType<T extends ValidComponent, P> = ComponentProps<T> & {
   class?: string
@@ -29,18 +29,23 @@ type MakeStyle<T extends ValidComponent> = <P>(
   ...args: StyledPlaceholder<T, P>[]
 ) => Component<PropsType<T, P>>
 
-const makeStyled = <T extends ValidComponent>(tag: T, g = 0): MakeStyle<T> => {
+const makeStyled = <T extends ValidComponent>(
+  tag: T,
+  opt?: { g: number; d: boolean },
+): MakeStyle<T> => {
   return (styles, ...args) =>
     (props) => {
       const [local, others] = splitProps(props, ['as', 'class'])
-      const theme = useTheme()
+      const { theme, build } = useDecoRock()
       const withTheme = mergeProps(props, { theme })
       const className = createMemo(() => {
         const c = local.class,
           o = local.class && /^go[0-9]+/.test(c)
         const s = typeof styles === 'function' ? styles(withTheme as any) : styles
-        const p = args.map((f) => (typeof f === 'function' ? f(withTheme as any) : f))
-        return [local.class, css.apply({ o, g }, [s, ...p])].filter(Boolean).join(' ')
+        const p = args.map((f) =>
+          (build || ((p) => p))(typeof f === 'function' ? f(withTheme as any) : f),
+        )
+        return [local.class, css.apply({ o, g: opt?.g }, [s, ...p])].filter(Boolean).join(' ')
       })
       return (
         <Dynamic

@@ -64,7 +64,7 @@ const Box = (props) => {
 ### `Theme`
 
 ```tsx
-import { styled, createThemeStore, ThemeProvider } from 'decorock'
+import { styled, createThemeStore, DecoRockProvider } from 'decorock'
 
 const [theme, setTheme] = createThemeStore({
   colors: {
@@ -78,9 +78,9 @@ const SomeText = styled.div`
 
 render(
   () => (
-    <ThemeProvider theme={theme}>
+    <DecoRockProvider theme={theme}>
       <SomeText>some text</SomeText>
-    </ThemeProvider>
+    </DecoRockProvider>
   ),
   document.getElementById('app'),
 )
